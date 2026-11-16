@@ -13,8 +13,6 @@
 name: RELEASE Builder
 
 on:
-  schedule:
-    - cron: '15 17 * * *'  # UTC 17:15 = 北京时间 01:15
   workflow_dispatch:
     inputs:
       Cache:
@@ -28,7 +26,7 @@ on:
           - 不使用缓存
 
 env:
-  REPO_URL: https://github.com/1018ji/ponwrt
+  REPO_URL: https://github.com/pbs05/ponwrt
   REPO_BRANCH: master
   TZ: Asia/Shanghai
   GH_REPO: ${{ github.repository }}
