@@ -36,7 +36,7 @@ on:
         default: 1
 
 env:
-  REPO_URL: https://github.com/1018ji/ponwrt
+  REPO_URL: https://github.com/pbs05/ponwrt
   REPO_BRANCH: master
   FEEDS_CONF: feeds.conf.default
   DIY_P1_SH: diy-part1.sh
@@ -141,7 +141,7 @@ jobs:
       id: package
       run: |
         cd openwrt
-        for CONFIG in an7581.config an7583.config; do
+        for CONFIG in an7581.config; do
           $GITHUB_WORKSPACE/.github/scripts/load-config.sh $CONFIG
           make download -j$(nproc)
         done
@@ -170,7 +170,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        target: [an7581, an7583]
+        target: [an7581]
     env:
       CONFIG_FILE: ${{ matrix.target }}.config
       FREE_DISK: true
@@ -207,6 +207,15 @@ jobs:
     - name: Load custom configuration
       run: cd openwrt && $GITHUB_WORKSPACE/.github/scripts/load-config.sh $CONFIG_FILE
 
+    - name: Sanity check target selection
+      run: |
+        cd openwrt
+        test "$(grep -c '^CONFIG_TARGET_DEVICE_.*=y' .config)" = 1
+        grep -q '^CONFIG_TARGET_DEVICE_airoha_an7581_DEVICE_fiberhome_hg5382a=y' .config
+        grep -q '^CONFIG_PACKAGE_luci-app-airoha-npu=y' .config
+        grep -q '^CONFIG_PACKAGE_openssh-sftp-server=y' .config
+        ! grep -q '^CONFIG_PACKAGE_luci-app-upnp=y' .config
+      
     - name: Setup SSH session
       if: inputs.ssh
       uses: owenthereal/action-upterm@v2
